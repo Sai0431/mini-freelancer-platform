@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Applicants for {{ project['title'] }}</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', sans-serif;
+            background: #f5f7fa;
+            margin: 0;
+            padding: 40px;
+        }
+        h1 {
+            color: #333;
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        .applicants-container {
+            max-width: 900px;
+            margin: 0 auto;
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+        }
+        .applicant-card {
+            padding: 20px;
+            border-bottom: 1px solid #eee;
+        }
+        .applicant-card:last-child {
+            border-bottom: none;
+        }
+        .applicant-name {
+            font-size: 20px;
+            font-weight: 700;
+            color: #667eea;
+        }
+        .applicant-info {
+            color: #555;
+            margin-top: 8px;
+            line-height: 1.6;
+        }
+        .skills {
+            margin-top: 8px;
+        }
+        .skill {
+            display: inline-block;
+            background: #e3f2fd;
+            color: #1976d2;
+            padding: 6px 12px;
+            border-radius: 20px;
+            margin-right: 6px;
+            font-size: 13px;
+        }
+        .status {
+            font-weight: 600;
+            color: #555;
+            margin-top: 8px;
+        }
+        .action-btn {
+            background: #667eea;
+            color: white;
+            border: none;
+            padding: 6px 12px;
+            border-radius: 5px;
+            cursor: pointer;
+            margin-left: 5px;
+            font-size: 14px;
+        }
+        .action-btn.secondary {
+            background: white;
+            color: #667eea;
+            border: 2px solid #667eea;
+        }
+        .action-btn:hover {
+            opacity: 0.9;
+        }
+        a.back-btn {
+            display: inline-block;
+            background: #667eea;
+            color: white;
+            text-decoration: none;
+            padding: 10px 20px;
+            border-radius: 6px;
+            margin-top: 20px;
+            font-weight: 600;
+        }
+        a.back-btn:hover {
+            background: #5568d3;
+        }
+    </style>
+</head>
+<body>
+    <h1>Applicants for "{{ project['title'] }}"</h1>
+    <div class="applicants-container">
+        {% if applicants %}
+            {% for a in applicants %}
+            <div class="applicant-card">
+                <div class="applicant-name">{{ a['stu_name'] }}</div>
+                <div class="applicant-info">📧 {{ a['email'] }}</div>
+                <div class="applicant-info">{{ a['description'] }}</div>
+                <div class="skills">
+                    {% for skill in a['skills'].split(',') %}
+                        <span class="skill">{{ skill.strip() }}</span>
+                    {% endfor %}
+                </div>
+                <div class="status">Status: {{ a['status'] }}</div>
+
+                {% if a['status'] == 'Pending' %}
+                <form method="POST" action="{{ url_for('update_application_status', application_id=a['application_id']) }}" style="display:inline;">
+                    <input type="hidden" name="status" value="Accepted">
+                    <button type="submit" class="action-btn">Accept</button>
+                </form>
+                <form method="POST" action="{{ url_for('update_application_status', application_id=a['application_id']) }}" style="display:inline;">
+                    <input type="hidden" name="status" value="Rejected">
+                    <button type="submit" class="action-btn secondary">Reject</button>
+                </form>
+                {% endif %}
+            </div>
+            {% endfor %}
+        {% else %}
+            <p style="text-align:center; color:#888;">No applicants yet.</p>
+        {% endif %}
+        <a href="{{ url_for('client_dashboard') }}" class="back-btn">← Back to Dashboard</a>
+    </div>
+</body>
+</html>
